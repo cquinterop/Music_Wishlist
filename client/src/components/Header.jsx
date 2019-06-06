@@ -13,7 +13,7 @@ const header = props => {
     <Header>
       <h1>Find Your Favorite Albums</h1>
       <form
-      method="get"
+        method="GET"
         onSubmit={submitHandler}>
         <Input
           ref={textInput}

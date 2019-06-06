@@ -10,12 +10,12 @@ import Footer from '../components/Footer.jsx'
 
 class App extends Component {
   state = {
-    API_data: [],
-    search: 'Back in black',
+    albums: [],
+    search: '',
     msg: 'Invalid name, please type again'
   }
 
-  instance = axios.create({
+  spotifyInstance = axios.create({
     baseURL: 'https://api.spotify.com/v1',
     headers: {
       'Content-Type': 'application/json',
@@ -23,8 +23,12 @@ class App extends Component {
     }
   })
 
-  componentWillMount() {
-    return this.makeRequest()
+  componentDidMount() {
+    axios
+      .get('http://localhost:5000/get_wishes')
+      .then(res => res.data)
+      .then(albums => this.setState({ albums }))
+      .catch(err => console.log(err))
   }
 
   filterMusic = query => {
@@ -32,29 +36,48 @@ class App extends Component {
   }
 
   makeRequest = () => {
-    this.instance
+    this.spotifyInstance
       .get(`/search?q=${this.state.search}&type=album&limit=30`)
       .then(res => res.data.albums.items)
-      .then(data => this.setState({ API_data: data }))
+      .then(data => {
+        let newState = []
+        data.map(item => {
+          const newData = {
+            album: {
+              name: item.name,
+              link: item.external_urls.spotify,
+              cover: item.images[1].url
+            },
+            artist: {
+              name: item.artists[0].name
+            },
+            _id: item.id
+          }
+          return newState[newState.length] = newData
+        })
+        return newState
+      })
+      .then(albums => this.setState({ albums }))
       .catch(err => console.log(err))
+  }
+
+  removeCard = id => {
+    let albums = [...this.state.albums]
+    const array = albums.map(album => album.id)
+    const index = array.findIndex(currentId => currentId === id)
+
+    albums.splice(index, 1)
+    this.setState({ albums })
   }
 
   render() {
     return (
       <div className="App">
-        < Header
+        <Header
           filterMusic={this.filterMusic}
-          message={this.state.API_data.length === 0 ? this.state.msg : null} />
-        < Container>
-          {this.state.API_data.map(item => (
-            <ProductCard
-              image={item.images[1].url}
-              name={item.name}
-              description={item.artists[0].name}
-              artistLink={item.artists[0].external_urls.spotify}
-              albumLink={item.external_urls.spotify}
-              key={item.id} />))
-          }
+          message={this.state.albums.length === 0 ? this.state.msg : null} />
+        <Container>
+          {this.state.albums.map(album => <ProductCard {...album} key={album._id} removeCard={this.removeCard} />)}
         </Container>
         <Footer />
       </div>
