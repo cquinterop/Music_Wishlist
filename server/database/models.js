@@ -10,7 +10,7 @@ const wishlistSchema = new Schema({
   artist: {
     name: { type: String, required: true }
   }
-})
+}, {timestamps: true})
 
 const wishlist =  mongoose.model('Wishlist', wishlistSchema)
 
