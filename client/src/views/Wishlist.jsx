@@ -20,11 +20,8 @@ class Wishlist extends Component {
 
     removeCard = id => {
         let albums = [...this.state.albums]
-        const array = albums.map(album => album._id)
-        const index = array.findIndex(currentId => currentId === id)
-
-        albums.splice(index, 1)
-        this.setState({ albums })
+        const remainingAlbums = albums.filter(album => album._id !== id)
+        this.setState({ albums: remainingAlbums })
     }
 
     render() {

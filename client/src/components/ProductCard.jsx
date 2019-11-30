@@ -3,34 +3,40 @@ import styled from 'styled-components'
 import axios from 'axios'
 
 const productCard = props => {
-
+  const { 
+    album: { 
+      name: albumName, 
+      link: albumLink, 
+      cover: albumCover 
+    },
+    artist: { name: artistName },
+    _id: albumId,
+    removeCard
+  } = props
+  
   const databaseInstance = axios.create({
     baseURL: 'http://localhost:5000',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    headers: { 'Content-Type': 'application/json' }
   })
 
   const addFav = () => {
     databaseInstance.post('/add_wish', {
-      album: {
-        name: props.album.name,
-        link: props.album.link,
-        cover: props.album.cover
+      album: { 
+        name: albumName, 
+        link: albumLink, 
+        cover: albumCover 
       },
-      artist: {
-        name: props.artist.name
-      }
+      artist: { name: artistName }
     })
       .then(res => console.log(res))
       .catch(err => console.log(err))
   }
 
   const removeFav = () => {
-    databaseInstance.delete(`/remove_wish/${props._id}`)
+    databaseInstance.delete(`/remove_wish/${albumId}`)
       .then(res => console.log(res))
       .catch(err => console.log(err))
-      props.removeCard(props._id)
+    removeCard(albumId)
   }
 
   return (
