@@ -1,6 +1,56 @@
 const Wishlist = require('../database/models')
+const { spotify: { CLIENT_ID, CLIENT_SECRET } } = require('../config/config')
+const axios = require('axios')
+const qs = require('qs')
 
 const controller = {}
+
+controller.get_albums = async (req, res) => {
+  try {
+    const encoded_auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')
+    const { data: { access_token } } = await axios({
+      method: 'post',
+      url: 'https://accounts.spotify.com/api/token',
+      data: qs.stringify({
+        'grant_type': 'client_credentials'
+      }),
+      headers: {
+        'Authorization': `Basic ${encoded_auth}`,
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    })
+    const { data: { albums: { items: albums } } } = await axios({
+      method: 'get',
+      url: `https://api.spotify.com/v1/search?q=${req.body.search}&type=album&limit=30`,
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    const orgnanizedAlbums = _ => {
+      const newState = []
+      albums.map(album => {
+        const newData = {
+          album: {
+            name: album.name,
+            link: album.external_urls.spotify,
+            cover: album.images[1].url
+          },
+          artist: {
+            name: album.artists[0].name
+          },
+          _id: album.id
+        }
+        return newState[newState.length] = newData
+      })
+      return newState
+    }
+
+    res.send(orgnanizedAlbums());
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 controller.get_wishes = async (req, res) => {
   const wishes = await Wishlist.find()
