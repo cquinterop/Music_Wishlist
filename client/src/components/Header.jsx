@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { createRef } from 'react'
 import styled from 'styled-components'
 
-const header = props => {
-  const textInput = React.createRef()
+function SearchForm(props) {
+  const textInput = createRef()
 
   const submitHandler = e => {
     e.preventDefault()
@@ -70,4 +70,4 @@ const Buttom = styled.input`
     }
 `
 
-export default header
+export default SearchForm

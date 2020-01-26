@@ -1,46 +1,51 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import axios from 'axios'
 // import config from '../config/config'
 // import Container from '../components/Container'
 import Header from '../components/Header'
-import Footer from '../components/Footer'
 import ProductCard from '../components/ProductCard'
+import styled from 'styled-components'
 
 
-class Search extends Component {
-    state = {
-        albums: [],
-        search: 'Muse',
-        msg: 'Invalid name, please type again'
-    }
+function Search() {
+    const [albums, setAlbums] = useState([])
+    const [query, setQuery] = useState('Muse')
 
-    componentDidMount() {
-        this.makeRequest()
-    }
+    useEffect(() => {
+        const getAlbums = async () => {
+            const { data } = await axios(`http://localhost:5000/get_albums/${query}`);
+            setAlbums(data)
+        }
+        getAlbums()
+    }, [query])
 
-    filterMusic = query => {
-        this.setState({ search: query }, () => this.makeRequest())
-    }
+    const filterMusic = query => setQuery(query)
 
-    makeRequest = _ => axios
-            .post('http://localhost:5000/get_albums', { search: this.state.search })
-            .then(({ data: albums }) => this.setState({ albums }))
-            .catch(err => console.log(err))
-
-    render() {
-        return (
-            <div>
-                <Header
-                    filterMusic={this.filterMusic}
-                    message={this.state.albums.length === 0 ? this.state.msg : null} />
-                {/* <Route path="/" exact component={Container} /> */}
-
-                {this.state.albums.map(album => <ProductCard {...album} key={album._id} />)}
-                <Footer />
-            </div>
-        )
-    }
+    return (
+        <div>
+            <Header
+                filterMusic={filterMusic}
+                message={albums.length === 0 && 'Invalid name, please type again'} />
+            {/* <Route path="/" exact component={Container} /> */}
+            <Container>
+                {albums.map(album => <ProductCard {...album} key={album._id} />)}
+            </Container>
+        </div>
+    )
 }
+
+const Container = styled.section`
+   width: 80%;
+   padding: 1% 5%;
+   min-height: 65vh;
+   margin: 0 auto;
+   border-radius: 10px;
+   background-color: #6acc91;
+   background-image: linear-gradient(to bottom right, #84ffc1, #ffff78);
+   @media (max-width: 800px) {
+    width: 95%;
+   }
+`
 
 export default Search;

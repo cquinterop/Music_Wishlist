@@ -1,13 +1,12 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
-const Home = () => {
-        return (
-            <Container>
-               Form
+function Home() {
+    return (
+        <Container>
+            Form
             </Container>
-        )
+    )
 }
 
 const Container = styled.section`

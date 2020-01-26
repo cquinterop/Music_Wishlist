@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
-const notFound = () => {
+function PageNotFound(){
     return (
         <Btn>
             <Link to="/">
@@ -19,4 +19,4 @@ const Btn = styled.button`
    background-color: #6acc91;
 `
 
-export default notFound;
+export default PageNotFound;
