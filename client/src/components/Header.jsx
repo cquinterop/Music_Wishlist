@@ -1,22 +1,23 @@
 import React, { createRef } from 'react'
 import styled from 'styled-components'
+import { useDispatch } from 'react-redux'
+import { getSpotifyAlbums } from '../redux/actions'
 
 function SearchForm(props) {
-  const textInput = createRef()
-
-  const submitHandler = e => {
-    e.preventDefault()
-    props.filterMusic(textInput.current.value)
+  const inputText = createRef()
+  const dispatch = useDispatch()
+  
+  const handleSubmit = event => {
+    event.preventDefault()
+    dispatch(getSpotifyAlbums(inputText.current.value))
   }
 
   return (
     <Header>
       <h1>Find Your Favorite Albums</h1>
-      <form
-        method="GET"
-        onSubmit={submitHandler}>
+      <form onSubmit={handleSubmit}>
         <Input
-          ref={textInput}
+          ref={inputText}
           placeholder="Search by album or artist"
           type='text' />
         <Buttom
@@ -32,7 +33,7 @@ const Header = styled.header`
    width: 100%;
    color: #FFF;
    text-align: center;
-   padding: 50px 0 100px;
+   padding: 50px 0 0;
 `
 
 const Input = styled.input`
